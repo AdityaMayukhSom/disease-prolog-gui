@@ -30,8 +30,12 @@ symptomsForm.addEventListener("submit", async function (event) {
     const diseaseArray = await findDiseases(symptoms)
 
     if (diseaseArray.length === 0) {
-        outputSection.style.color = "red="
-        outputSection.innerText = 'no disease found'
+        // no matching disease found
+        outputSection.style.color = "red"
+        outputSection.innerText = 'We were unable to find any disease that matches your symptoms. Please consult a doctor as soon as possible.'.toLocaleUpperCase()
+
+        symptomsForm.reset()
+        document.getElementById("submit-button").disabled = false;
         return
     }
 
@@ -40,17 +44,17 @@ symptomsForm.addEventListener("submit", async function (event) {
     outputTitle.innerText = "The diseases that you may have are - "
     const outputListContainer = document.createElement('ol')
     outputSection.appendChild(outputTitle)
+
     diseaseArray.forEach(disease => {
         const diseaseName = document.createElement('li');
         diseaseName.innerText = disease.replace("_", " ").toLocaleUpperCase();
         diseaseName.classList.add("symptom-name");
         outputListContainer.appendChild(diseaseName);
     });
-    outputSection.appendChild(outputListContainer)
 
+    outputSection.appendChild(outputListContainer)
     symptomsForm.reset()
     document.getElementById("submit-button").disabled = false;
-
 });
 
 
@@ -73,10 +77,10 @@ async function findDiseases(symptoms_list) {
     await session.promiseQuery(goal);
     let diseaseString = ''
     for await (let answer of session.promiseAnswers()) {
-        diseaseString += session.format_answer(answer)
+        diseaseString = session.format_answer(answer)
     }
     const matches = diseaseString.match(/\[(.*?)\]/);
-    const diseaseArray = matches ? matches[1].split(',').map(el => el.trim()) : [];
+    const diseaseArray = matches && (matches[1].length !== 0) ? matches[1].split(',').map(el => el.trim()) : [];
     return diseaseArray
 }
 
