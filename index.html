@@ -10,6 +10,15 @@
     body {
       padding-bottom: 5rem;
     }
+
+    #submit-button {
+      padding: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    #output-section {
+      padding-top: 1rem;
+    }
   </style>
 </head>
 
@@ -17,68 +26,166 @@
   <h1>Symptom Checker</h1>
   <form id="symptoms_form">
     <!-- Common Symptoms -->
-    <label for="symptoms">Common Symptoms:</label><br />
-    <input type="checkbox" name="symptoms" value="fever" />
-    <span>Fever</span><br />
-    <input type="checkbox" name="symptoms" value="runny_nose" />
-    <span>Runny Nose</span><br />
-    <input type="checkbox" name="symptoms" value="sore_throat" />
-    <span>Sore Throat</span><br />
-    <input type="checkbox" name="symptoms" value="cough" />
-    <span>Cough</span><br />
-    <input type="checkbox" name="symptoms" value="muscle_aches" />
-    <span>Muscle Aches</span><br />
-    <input type="checkbox" name="symptoms" value="excessive_thirst" />
-    <span>Excessive Thirst</span><br />
-    <input type="checkbox" name="symptoms" value="frequent_urination" />
-    <span>Frequent Urination</span><br />
-    <input type="checkbox" name="symptoms" value="hunger" />
-    <span>Hunger</span><br />
-    <input type="checkbox" name="symptoms" value="unexplained_weight_loss" />
-    <span>Unexplained Weight Loss</span><br />
-    <input type="checkbox" name="symptoms" value="slow_healing_sores" />
-    <span>Slow Healing Sores</span><br />
-    <input type="checkbox" name="symptoms" value="dark_skin_patches" />
-    <span>Dark Skin Patches</span><br />
-    <input type="checkbox" name="symptoms" value="ear_pain" />
-    <span>Ear Pain</span><br />
-    <input type="checkbox" name="symptoms" value="ear_drainage" />
-    <span>Ear Drainage</span><br />
-    <input type="checkbox" name="symptoms" value="painful_urination" />
-    <span>Painful Urination</span><br />
-    <input type="checkbox" name="symptoms" value="cloudy_or_bloody_urine" />
-    <span>Cloudy or Bloody Urine</span><br />
-    <input type="checkbox" name="symptoms" value="wheezing" />
-    <span>Wheezing</span><br />
-    <input type="checkbox" name="symptoms" value="shortness_of_breath" />
-    <span>Shortness of Breath</span><br />
-    <input type="checkbox" name="symptoms" value="chest_tightness" />
-    <span>Chest Tightness</span><br />
-    <input type="checkbox" name="symptoms" value="memory_changes" />
-    <span>Memory Changes</span><br />
-    <input type="checkbox" name="symptoms" value="word_finding_difficulty" />
-    <span>Word Finding Difficulty</span><br />
-    <input type="checkbox" name="symptoms" value="instruction_difficulty" />
-    <span>Instruction Difficulty</span><br />
-    <input type="checkbox" name="symptoms" value="personality_changes" />
-    <span>Personality Changes</span><br />
-    <input type="checkbox" name="symptoms" value="rash" /> <span>Rash</span><br />
-    <input type="checkbox" name="symptoms" value="itchy_rash" />
-    <span>Itchy Rash</span><br />
-    <input type="checkbox" name="symptoms" value="blisters_on_rash" />
-    <span>Blisters on Rash</span><br />
-    <input type="checkbox" name="symptoms" value="loose_stools" />
-    <span>Loose Stools</span><br />
-    <input type="checkbox" name="symptoms" value="nausea_or_vomiting" />
-    <span>Nausea or Vomiting</span><br />
-    <input type="checkbox" name="symptoms" value="unusual_food_or_drink_consumption" />
-    <span>Unusual Food or Drink Consumption</span><br />
-    <input type="checkbox" name="symptoms" value="contact_with_chickenpox" />
-    <span>Contact with Chickenpox</span><br />
-    <input type="checkbox" name="symptoms" value="contact_with_diarrhea_case" />
-    <span>Contact with Diarrhea Case</span><br /><br />
 
-    <input type="submit" id="submit-button" value="Submit" />
+    <fieldset>
+      <legend>General Symptoms</legend>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="fever" id="fever" />
+        <label for="fever">Do you have a fever?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="runny_nose" id="runny_nose" />
+        <label for="runny_nose">Do you have a runny nose?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="sore_throat" id="sore_throat" />
+        <label for="sore_throat">Do you have a sore throat?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="cough" id="cough" />
+        <label for="cough">Do you have a cough?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="muscle_aches" id="muscle_aches" />
+        <label for="muscle_aches">Do you have muscle aches?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="excessive_thirst" id="excessive_thirst" />
+        <label for="excessive_thirst">Do you have excessive thirst?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="frequent_urination" id="frequent_urination" />
+        <label for="frequent_urination">Do you have frequent urination?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="hunger" id="hunger" />
+        <label for="hunger">Do you feel hungry all the time?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="unexplained_weight_loss" id="unexplained_weight_loss" />
+        <label for="unexplained_weight_loss">Have you lost weight without trying?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="slow_healing_sores" id="slow_healing_sores" />
+        <label for="slow_healing_sores">Do you have sores that are slow to heal?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="dark_skin_patches" id="dark_skin_patches" />
+        <label for="dark_skin_patches">Do you have dark patches on your skin?</label>
+      </div>
+    </fieldset>
+
+
+    <fieldset>
+      <legend>Specific Symptoms</legend>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="ear_pain" id="ear_pain" />
+        <label for="ear_pain">Do you have ear pain?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="ear_drainage" id="ear_drainage" />
+        <label for="ear_drainage">Is there any drainage from your ear?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="painful_urination" id="painful_urination" />
+        <label for="painful_urination">Do you have pain when you urinate?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="cloudy_or_bloody_urine" id="cloudy_or_bloody_urine" />
+        <label for="cloudy_or_bloody_urine">Is your urine cloudy or bloody?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="wheezing" id="wheezing" />
+        <label for="wheezing">Do you have wheezing?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="shortness_of_breath" id="shortness_of_breath" />
+        <label for="shortness_of_breath">Do you have shortness of breath?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="chest_tightness" id="chest_tightness" />
+        <label for="chest_tightness">Do you have chest tightness?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="memory_changes" id="memory_changes" />
+        <label for="memory_changes">Have you noticed any changes in your memory?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="word_finding_difficulty" id="word_finding_difficulty" />
+        <label for="word_finding_difficulty">Do you have difficulty finding words?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="instruction_difficulty" id="instruction_difficulty" />
+        <label for="instruction_difficulty">Do you have difficulty following instructions?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="personality_changes" id="personality_changes" />
+        <label for="personality_changes">Have you noticed any changes in your personality?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="rash" id="rash" />
+        <label for="rash">Do you have a rash?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="itchy_rash" id="itchy_rash" />
+        <label for="itchy_rash">Is your rash itchy?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="blisters_on_rash" id="blisters_on_rash" />
+        <label for="blisters_on_rash">Are there any blisters on your rash?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="loose_stools" id="loose_stools" />
+        <label for="loose_stools">Do you have loose stools (diarrhea)?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="nausea_or_vomiting" id="nausea_or_vomiting" />
+        <label for="nausea_or_vomiting">Do you have nausea or vomiting?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="unusual_food_or_drink_consumption"
+          id="unusual_food_or_drink_consumption" />
+        <label for="unusual_food_or_drink_consumption">Have you consumed any unusual food or drink?</label>
+      </div>
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="contact_with_chickenpox" id="contact_with_chickenpox" />
+        <label for="contact_with_chickenpox">Have you been in contact with someone who has chickenpox?</label>
+      </div>
+
+      <div class="symptom-group">
+        <input type="checkbox" name="symptoms" value="contact_with_diarrhea_case" id="contact_with_diarrhea_case" />
+        <label for="contact_with_diarrhea_case">Have you been in contact with someone who has diarrhea?</label>
+      </div>
+    </fieldset>
+    <input type="submit" id="submit-button" value="Check for Diseases" />
   </form>
 
 

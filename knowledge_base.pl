@@ -38,7 +38,7 @@ sore_throat(cold).
 thirst(diabetes).
 unusual_food_or_drink_consumption(diarrhea).
 urination(diabetes).
-weight_loss(diabetes).
+unexplained_weight_loss(diabetes).
 wheezing(asthma).
 wheezing(bronchitis).
 word_finding_difficulty(alzheimers).
