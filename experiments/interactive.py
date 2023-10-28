@@ -9,8 +9,12 @@ def create_dictionaries_with_dataframe(df: pd.DataFrame):
     diseases_dict: Dict[str, Set[str]] = {}
     symptoms_dict: Dict[str, Set[str]] = {}
 
-    lenght = len(df)  # total number of data points in the data i.e. number of rows
-    attr_len = len(df.columns)  # number of parameters including the disease name
+    lenght = len(
+        df
+    )  # total number of data points in the data i.e. number of rows
+    attr_len = len(
+        df.columns
+    )  # number of parameters including the disease name
 
     for i in range(lenght):
         disease = (str)(df.iloc[i, 0])
@@ -251,7 +255,9 @@ def generate_matching_diseases_from_symptoms_list(
     symptoms_mapping: Dict[str, int],
     diseases_mapping: Dict[str, int],
 ):
-    symptoms_mask = generate_symptoms_map_from_list(symptoms_list, symptoms_mapping)
+    symptoms_mask = generate_symptoms_map_from_list(
+        symptoms_list, symptoms_mapping
+    )
 
     matching_diseases = [
         disease
@@ -300,7 +306,9 @@ def generate_next_set_questions(
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(filepath_or_buffer="./archive/dataset.csv", skipinitialspace=True)
+    df = pd.read_csv(
+        filepath_or_buffer="./archive/dataset.csv", skipinitialspace=True
+    )
 
     # we need to write the diseases_dict and symptoms_dict, as well as diseases for further retrieval
     """ stores the diseaseas key and a set containing symptoms for that disease as the value """
@@ -332,13 +340,15 @@ if __name__ == "__main__":
         for disease in diseases_dict
     }
 
-    symptoms_mapping_file = open("./backend/pickle_files/symptoms_mapping_file.pkl", "wb")
-    diseases_mapping_file = open("./backend/pickle_files/diseases_mapping_file.pkl", "wb")
+    symptoms_mapping_file = open("symptoms_mapping_file.pkl", "wb")
+    diseases_mapping_file = open("diseases_mapping_file.pkl", "wb")
 
     pickle.dump(symptoms_mapping, symptoms_mapping_file, -1)
     pickle.dump(diseases_mapping, diseases_mapping_file, -1)
 
-    initial_questions = generate_initial_questions(adj, diseases, ordered_symptoms)
+    initial_questions = generate_initial_questions(
+        adj, diseases, ordered_symptoms
+    )
     initial_mask = 0
     for question in initial_questions:
         initial_mask |= 1 << symptoms_mapping[question]
@@ -347,9 +357,14 @@ if __name__ == "__main__":
     selected_symptoms_mask = 0
 
     selected_symptoms = ["high_fever"]
-    symptoms_mask = generate_symptoms_map_from_list(selected_symptoms, symptoms_mapping)
+    symptoms_mask = generate_symptoms_map_from_list(
+        selected_symptoms, symptoms_mapping
+    )
     next_set_mask, next_set_questions = generate_next_set_questions(
-        selected_symptoms, already_asked_mask, symptoms_mapping, diseases_mapping
+        selected_symptoms,
+        already_asked_mask,
+        symptoms_mapping,
+        diseases_mapping,
     )
     already_asked_mask |= next_set_mask
     selected_symptoms_mask |= symptoms_mask
