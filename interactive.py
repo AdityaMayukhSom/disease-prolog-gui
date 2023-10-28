@@ -332,8 +332,8 @@ if __name__ == "__main__":
         for disease in diseases_dict
     }
 
-    symptoms_mapping_file = open("./pickle_files/symptoms_mapping_file.pkl", "wb")
-    diseases_mapping_file = open("./pickle_files/diseases_mapping_file.pkl", "wb")
+    symptoms_mapping_file = open("./backend/pickle_files/symptoms_mapping_file.pkl", "wb")
+    diseases_mapping_file = open("./backend/pickle_files/diseases_mapping_file.pkl", "wb")
 
     pickle.dump(symptoms_mapping, symptoms_mapping_file, -1)
     pickle.dump(diseases_mapping, diseases_mapping_file, -1)
