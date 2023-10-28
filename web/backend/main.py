@@ -1,17 +1,29 @@
 from typing import List
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from .utils import (
+from utils import (
     encrypt_symptoms,
     find_matching_diseases,
     generate_next_set_questions,
 )
-from .database import get_mappings
-from .schema import SelectedSymptoms
+from database import get_mappings
+from schema import SelectedSymptoms
+
+origins = [
+    "http://localhost:5173",
+]
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/initial-questions")
 def get_initial_questions():

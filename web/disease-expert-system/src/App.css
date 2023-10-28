@@ -35,8 +35,21 @@
 
 .card {
   padding: 2em;
+  text-align: left;
+}
+
+.card button {
+  margin: 1em 0;
 }
 
 .read-the-docs {
   color: #888;
+}
+
+.q {
+  padding: .25em;
+}
+
+.q label {
+  margin-left: 10px;
 }

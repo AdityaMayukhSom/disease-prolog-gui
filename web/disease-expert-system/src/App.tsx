@@ -1,32 +1,84 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-const SERVER_URL = "http://localhost:8080"
-
-interface Question {
-  question_id: number;
-  question_string: string;
-}
+const SERVER_URL = "http://localhost:8000"
 
 function App() {
   const [step, setStep] = useState(0)
-  const [initQ, setInitQ] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<string[]>([])
+  const [alreadyAskedMask, setAlreadyAskedMask] = useState<number>(0)
+  const [selectedMask, setSelectedMask] = useState<number>(0)
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
 
   const getInitialQuestions = async () => {
     const resp = await fetch(SERVER_URL + "/initial-questions")
-    const { questions } = await resp.json()
-    setInitQ(questions as Question[])
+    const { 
+      initial_questions,
+      already_asked_mask,
+      selected_mask,
+    } = await resp.json()
+    setAlreadyAskedMask(already_asked_mask)
+    setSelectedMask(selected_mask)
+    setQuestions(initial_questions as string[])
+  }
+
+  const getNextQuestions = async () => {
+    const resp = await fetch(SERVER_URL + "/next-questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        already_asked_mask: alreadyAskedMask,
+        already_selected_symptoms_mask: selectedMask,
+        symptoms: selectedSymptoms,
+      })
+    })
+    const { 
+      next_questions,
+      already_asked_mask,
+      selected_mask,
+    } = await resp.json()
+
+    if (next_questions.length === 0) {
+      alert("dead.")
+      return
+    }
+
+    setAlreadyAskedMask(already_asked_mask)
+    setSelectedMask(selected_mask)
+    setQuestions(next_questions as string[])
+  }
+
+  const nextStep = async () => {
+    if (step === 0) {
+      if (selectedSymptoms.length === 0) {
+        alert("you're healthy mf.")
+        return
+      }
+      console.log(selectedSymptoms)
+      await getNextQuestions()
+      setStep(1)
+    } else if (step === 1) {
+      setStep(2)
+    }
+  }
+
+  const addOrRemoveSymptom = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (selectedSymptoms.includes(e.target.value)) {
+      setSelectedSymptoms(prev => (
+        prev.filter(symptom => symptom !== e.target.value)
+      ))
+    } else {
+      setSelectedSymptoms(prev => [...prev, e.target.value])
+    }
   }
 
   useEffect(() => {
-    if (step === 0) {
-      getInitialQuestions()
-    } else if (step === 1) {
-      // Get next set of questions
-    }
-  }, [step])
+    getInitialQuestions()
+  }, [])
 
   return (
     <>
@@ -39,30 +91,43 @@ function App() {
         </a>
       </div>
       <h1>disease expert system.</h1>
-      {(step === 0 && initQ.length) && (
+      {questions.length && (
         <div className="card">
-          {initQ.map(q => (
-            <div key={q.question_id}>
+          {step === 0 && questions.map(q => (
+            <div key={q} className='q'>
               <input 
+                onChange={addOrRemoveSymptom}
                 type='checkbox' 
-                value={q.question_id}
+                value={q}
               />
-              <label htmlFor="question">{q.question_string}</label>
+              <label htmlFor="question">{q}</label>
             </div>
           ))}
-          <button onClick={() => setStep(1)}>
+          {step === 1 && questions.slice(0, questions.length / 2).map(q => (
+            <div key={q} className='q'>
+              <input 
+                onChange={addOrRemoveSymptom}
+                type='checkbox' 
+                value={q}
+              />
+              <label htmlFor="question">{q}</label>
+            </div>
+          ))}
+          {step === 2 && questions.slice(questions.length / 2).map(q => (
+            <div key={q} className='q'>
+              <input 
+                onChange={addOrRemoveSymptom}
+                type='checkbox' 
+                value={q}
+              />
+              <label htmlFor="question">{q}</label>
+            </div>
+          ))}
+          <button onClick={nextStep}>
             Continue
           </button>
         </div>
       )}
-      <div className="card">
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
