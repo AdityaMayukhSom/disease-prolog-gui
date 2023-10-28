@@ -1,28 +1,30 @@
-import { ChangeEvent, useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ChangeEvent, useEffect, useState } from "react";
+import "./App.css";
 
-const SERVER_URL = "http://localhost:8000"
+const SERVER_URL = "http://localhost:8000";
 
 function App() {
-  const [step, setStep] = useState(0)
-  const [questions, setQuestions] = useState<string[]>([])
-  const [alreadyAskedMask, setAlreadyAskedMask] = useState<number>(0)
-  const [selectedMask, setSelectedMask] = useState<number>(0)
-  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
+  const [step, setStep] = useState(0);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [alreadyAskedMask, setAlreadyAskedMask] = useState<BigInt>(BigInt(0n));
+  const [selectedMask, setSelectedMask] = useState<BigInt>(BigInt(0n));
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
 
   const getInitialQuestions = async () => {
-    const resp = await fetch(SERVER_URL + "/initial-questions")
-    const { 
+    const resp = await fetch(SERVER_URL + "/initial-questions");
+    const {
       initial_questions,
       already_asked_mask,
       selected_mask,
-    } = await resp.json()
-    setAlreadyAskedMask(already_asked_mask)
-    setSelectedMask(selected_mask)
-    setQuestions(initial_questions as string[])
-  }
+    }: {
+      initial_questions: string[];
+      already_asked_mask: BigInt;
+      selected_mask: BigInt;
+    } = await resp.json();
+    setAlreadyAskedMask(already_asked_mask);
+    setSelectedMask(selected_mask);
+    setQuestions(initial_questions);
+  };
 
   const getNextQuestions = async () => {
     const resp = await fetch(SERVER_URL + "/next-questions", {
@@ -34,102 +36,96 @@ function App() {
         already_asked_mask: alreadyAskedMask,
         already_selected_symptoms_mask: selectedMask,
         symptoms: selectedSymptoms,
-      })
-    })
-    const { 
-      next_questions,
-      already_asked_mask,
-      selected_mask,
-    } = await resp.json()
+      }),
+    });
+    const { next_questions, already_asked_mask, selected_mask } =
+      await resp.json();
 
     if (next_questions.length === 0) {
-      alert("dead.")
-      return
+      alert("dead.");
+      return;
     }
 
-    setAlreadyAskedMask(already_asked_mask)
-    setSelectedMask(selected_mask)
-    setQuestions(next_questions as string[])
-  }
+    setAlreadyAskedMask(already_asked_mask);
+    setSelectedMask(selected_mask);
+    setQuestions(next_questions as string[]);
+  };
 
   const nextStep = async () => {
     if (step === 0) {
       if (selectedSymptoms.length === 0) {
-        alert("you're healthy mf.")
-        return
+        alert("you're healthy mf.");
+        return;
       }
-      console.log(selectedSymptoms)
-      await getNextQuestions()
-      setStep(1)
+      console.log(selectedSymptoms);
+      await getNextQuestions();
+      setStep(1);
     } else if (step === 1) {
-      setStep(2)
+      setStep(2);
     }
-  }
+  };
 
   const addOrRemoveSymptom = async (e: ChangeEvent<HTMLInputElement>) => {
     if (selectedSymptoms.includes(e.target.value)) {
-      setSelectedSymptoms(prev => (
-        prev.filter(symptom => symptom !== e.target.value)
-      ))
+      setSelectedSymptoms((prev) =>
+        prev.filter((symptom) => symptom !== e.target.value)
+      );
     } else {
-      setSelectedSymptoms(prev => [...prev, e.target.value])
+      setSelectedSymptoms((prev) => [...prev, e.target.value]);
     }
-  }
+  };
 
   useEffect(() => {
-    getInitialQuestions()
-  }, [])
+    getInitialQuestions();
+  }, []);
+
+  useEffect(() => {
+    console.log(alreadyAskedMask);
+  }, [alreadyAskedMask]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
       <h1>disease expert system.</h1>
       {questions.length && (
         <div className="card">
-          {step === 0 && questions.map(q => (
-            <div key={q} className='q'>
-              <input 
-                onChange={addOrRemoveSymptom}
-                type='checkbox' 
-                value={q}
-              />
-              <label htmlFor="question">{q}</label>
-            </div>
-          ))}
-          {step === 1 && questions.slice(0, questions.length / 2).map(q => (
-            <div key={q} className='q'>
-              <input 
-                onChange={addOrRemoveSymptom}
-                type='checkbox' 
-                value={q}
-              />
-              <label htmlFor="question">{q}</label>
-            </div>
-          ))}
-          {step === 2 && questions.slice(questions.length / 2).map(q => (
-            <div key={q} className='q'>
-              <input 
-                onChange={addOrRemoveSymptom}
-                type='checkbox' 
-                value={q}
-              />
-              <label htmlFor="question">{q}</label>
-            </div>
-          ))}
-          <button onClick={nextStep}>
-            Continue
-          </button>
+          {step === 0 &&
+            questions.map((q) => (
+              <div key={q} className="q">
+                <input
+                  onChange={addOrRemoveSymptom}
+                  type="checkbox"
+                  value={q}
+                />
+                <label htmlFor="question">{q}</label>
+              </div>
+            ))}
+          {step === 1 &&
+            questions.slice(0, questions.length / 2).map((q) => (
+              <div key={q} className="q">
+                <input
+                  onChange={addOrRemoveSymptom}
+                  type="checkbox"
+                  value={q}
+                />
+                <label htmlFor="question">{q}</label>
+              </div>
+            ))}
+          {step === 2 &&
+            questions.slice(questions.length / 2).map((q) => (
+              <div key={q} className="q">
+                <input
+                  onChange={addOrRemoveSymptom}
+                  type="checkbox"
+                  value={q}
+                />
+                <label htmlFor="question">{q}</label>
+              </div>
+            ))}
+          <button onClick={nextStep}>Continue</button>
         </div>
       )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
