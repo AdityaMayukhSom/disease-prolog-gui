@@ -11,7 +11,7 @@ from utils import (
 from database import get_mappings
 from schema import SelectedSymptoms
 
-origins = [
+origins: List[str] = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
 ]
@@ -25,6 +25,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/initial-questions")
 def get_initial_questions():
@@ -78,16 +79,14 @@ def get_next_questions(request: SelectedSymptoms):
         next_set_mask,
         next_set_questions,
     ) = generate_next_set_questions(
-        selected_symptoms,
-        already_asked_mask,
-        symptoms_mapping,
-        diseases_mapping,
+        selected_symptoms=selected_symptoms,
+        already_asked_mask=already_asked_mask,
+        symptoms_mapping=symptoms_mapping,
+        diseases_mapping=diseases_mapping,
     )
 
     already_asked_mask |= next_set_mask
     already_selected_symptoms_mask |= symptoms_mask
-
-    print(next_set_questions)
 
     return {
         "already_asked_mask": str(already_asked_mask),
@@ -103,15 +102,16 @@ def get_matching_diseases(request: SelectedSymptoms):
 
     (symptoms_mapping, diseases_mapping) = get_mappings()
 
-    symptoms_mask = encrypt_symptoms(
+    symptoms_mask: int = encrypt_symptoms(
         symptoms_list=selected_symptoms,
         symptoms_mapping=symptoms_mapping,
     )
 
     already_selected_symptoms_mask |= symptoms_mask
 
-    matching_diseases = find_matching_diseases(
-        already_selected_symptoms_mask, diseases_mapping
+    matching_diseases: List[str] = find_matching_diseases(
+        symptoms=already_selected_symptoms_mask,
+        diseases_mapping=diseases_mapping,
     )
 
     return {"diseases": matching_diseases}
