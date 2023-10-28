@@ -42,14 +42,18 @@
   margin: 1em 0;
 }
 
-.read-the-docs {
-  color: #888;
-}
-
 .q {
   padding: .25em;
 }
 
 .q label {
   margin-left: 10px;
+}
+
+h3 {
+  text-align: left;
+}
+
+li {
+  padding: .25em 0;
 }

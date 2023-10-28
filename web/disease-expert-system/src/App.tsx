@@ -5,12 +5,15 @@ const SERVER_URL = "http://localhost:8000";
 
 function App() {
   const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<string[]>([]);
   const [alreadyAskedMask, setAlreadyAskedMask] = useState<bigint>(BigInt(0n));
   const [selectedMask, setSelectedMask] = useState<bigint>(BigInt(0n));
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [diseases, setDiseases] = useState<string[]>([]);
 
   const getInitialQuestions = async () => {
+    setLoading(true)
     const resp = await fetch(SERVER_URL + "/initial-questions");
     const {
       initial_questions,
@@ -28,9 +31,11 @@ function App() {
     setAlreadyAskedMask(numerical_already_asked_mask);
     setSelectedMask(numerical_selected_mask);
     setQuestions(initial_questions);
+    setLoading(false)
   };
 
   const getNextQuestions = async () => {
+    setLoading(true)
     const resp = await fetch(SERVER_URL + "/next-questions", {
       method: "POST",
       headers: {
@@ -54,7 +59,8 @@ function App() {
     } = await resp.json();
 
     if (next_questions.length === 0) {
-      alert("dead.");
+      setStep(3)
+      setDiseases([]);
       return;
     }
 
@@ -64,9 +70,12 @@ function App() {
     setAlreadyAskedMask(numerical_already_asked_mask);
     setSelectedMask(numerical_selected_mask);
     setQuestions(next_questions as string[]);
+    setLoading(false)
+    setStep(1);
   };
 
   const getDiseases = async () => {
+    setLoading(true)
     const resp = await fetch(SERVER_URL + "/matching-diseases", {
       method: "POST",
       headers: {
@@ -84,7 +93,11 @@ function App() {
     }: {
       diseases: string[]
     } = await resp.json();
+
     console.log(diseases)
+    setDiseases(diseases)
+    setLoading(false)
+    setStep(3);
   }
 
   const nextStep = async () => {
@@ -93,9 +106,7 @@ function App() {
         alert("you're healthy mf.");
         return;
       }
-
       await getNextQuestions();
-      setStep(1);
     } else if (step === 1) {
       setStep(2);
     } else if (step === 2) {
@@ -117,12 +128,27 @@ function App() {
     getInitialQuestions();
   }, []);
 
-  /*
-  useEffect(() => {
-    console.log(alreadyAskedMask.toString());
-    console.log(typeof alreadyAskedMask);
-  }, [alreadyAskedMask]); 
-  */
+  if (step === 3) {
+    return (
+      <>
+        <h1>disease expert system.</h1>
+        {diseases.length ? (
+          <div>
+            <h3>possible diseases:</h3>
+            <ul className="card">
+              {diseases.map((d) => (
+                <li key={d} className="disease">
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <h3>good luck. we don&apos;t know what&apos;s wrong with you.</h3>
+        )}
+      </>
+    )
+  }
 
   return (
     <>
