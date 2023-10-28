@@ -6,8 +6,8 @@ const SERVER_URL = "http://localhost:8000";
 function App() {
   const [step, setStep] = useState(0);
   const [questions, setQuestions] = useState<string[]>([]);
-  const [alreadyAskedMask, setAlreadyAskedMask] = useState<BigInt>(BigInt(0n));
-  const [selectedMask, setSelectedMask] = useState<BigInt>(BigInt(0n));
+  const [alreadyAskedMask, setAlreadyAskedMask] = useState<bigint>(BigInt(0n));
+  const [selectedMask, setSelectedMask] = useState<bigint>(BigInt(0n));
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
 
   const getInitialQuestions = async () => {
@@ -66,6 +66,27 @@ function App() {
     setQuestions(next_questions as string[]);
   };
 
+  const getDiseases = async () => {
+    const resp = await fetch(SERVER_URL + "/matching-diseases", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        already_asked_mask: alreadyAskedMask.toString(),
+        symptoms: selectedSymptoms,
+        already_selected_symptoms_mask: selectedMask.toString(),
+      }),
+    });
+
+    const {
+      diseases
+    }: {
+      diseases: string[]
+    } = await resp.json();
+    console.log(diseases)
+  }
+
   const nextStep = async () => {
     if (step === 0) {
       if (selectedSymptoms.length === 0) {
@@ -77,6 +98,8 @@ function App() {
       setStep(1);
     } else if (step === 1) {
       setStep(2);
+    } else if (step === 2) {
+      await getDiseases();
     }
   };
 
