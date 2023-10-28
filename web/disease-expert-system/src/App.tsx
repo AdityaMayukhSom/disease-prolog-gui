@@ -1,157 +1,73 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import "./App.css";
 
-const SERVER_URL = "http://localhost:8000";
+import Question from "./Question";
+import Diseases from "./Diseases";
+import {
+  getDiseases,
+  getInitialQuestions,
+  getNextQuestions,
+} from "../data/APICalls";
+
+import "./App.css";
 
 const f = (x: number) => (1 / 4) * (x * x - x);
 const g = (x: number) => (1 / 2) * (x * x - 2 * x + 2);
 
-const Question = ({
-  question,
-  addOrRemoveSymptom,
-}: {
-  question: string;
-  addOrRemoveSymptom: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
-}) => {
-  return (
-    <div key={question} className="question">
-      <input
-        onChange={addOrRemoveSymptom}
-        type="checkbox"
-        value={question}
-        id={`question_${question}`}
-      />
-      <label htmlFor={`question_${question}`}>{question}</label>
-    </div>
-  );
-};
-
-const Diseases = ({ diseases }: { diseases: string[] }) => {
-  return diseases.length ? (
-    <div>
-      <h3>possible diseases:</h3>
-      <ul className="card">
-        {diseases.map((d) => (
-          <li key={d} className="disease">
-            {d}
-          </li>
-        ))}
-      </ul>
-    </div>
-  ) : (
-    <h3>good luck. we don&apos;t know what&apos;s wrong with you.</h3>
-  );
-};
+enum Steps {
+  INITIAL_INQUIRY,
+  FIRST_DETAILED_INQUIRY,
+  SECOND_DETAILED_INQUIRY,
+  DISEASE_DIAGNOSIS,
+}
 
 function App() {
-  const [step, setStep] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [step, setStep] = useState<Steps>(Steps.INITIAL_INQUIRY);
+  const [loading, setLoading] = useState<boolean>(true);
   const [questions, setQuestions] = useState<string[]>([]);
   const [alreadyAskedMask, setAlreadyAskedMask] = useState<bigint>(BigInt(0n));
   const [selectedMask, setSelectedMask] = useState<bigint>(BigInt(0n));
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [diseases, setDiseases] = useState<string[]>([]);
 
-  const getInitialQuestions = async () => {
-    setLoading(true);
-    const resp = await fetch(SERVER_URL + "/initial-questions");
-    const {
-      initial_questions,
-      already_asked_mask,
-      selected_mask,
-    }: {
-      initial_questions: string[];
-      already_asked_mask: string;
-      selected_mask: string;
-    } = await resp.json();
-
-    const numerical_already_asked_mask = BigInt(already_asked_mask);
-    const numerical_selected_mask = BigInt(selected_mask);
-
-    setAlreadyAskedMask(numerical_already_asked_mask);
-    setSelectedMask(numerical_selected_mask);
-    setQuestions(initial_questions);
-    setLoading(false);
-  };
-
-  const getNextQuestions = async () => {
-    setLoading(true);
-    const resp = await fetch(SERVER_URL + "/next-questions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        symptoms: selectedSymptoms,
-        already_asked_mask: alreadyAskedMask.toString(),
-        already_selected_symptoms_mask: selectedMask.toString(),
-      }),
-    });
-
-    const {
-      next_questions,
-      already_asked_mask,
-      selected_mask,
-    }: {
-      next_questions: string[];
-      already_asked_mask: string;
-      selected_mask: string;
-    } = await resp.json();
-
-    if (next_questions.length === 0) {
-      setStep(3);
-      setDiseases([]);
-      return;
-    }
-
-    const numerical_already_asked_mask = BigInt(already_asked_mask);
-    const numerical_selected_mask = BigInt(selected_mask);
-
-    setAlreadyAskedMask(numerical_already_asked_mask);
-    setSelectedMask(numerical_selected_mask);
-    setQuestions(next_questions as string[]);
-    setLoading(false);
-    setStep(1);
-  };
-
-  const getDiseases = async () => {
-    setLoading(true);
-    const resp = await fetch(SERVER_URL + "/matching-diseases", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        already_asked_mask: alreadyAskedMask.toString(),
-        symptoms: selectedSymptoms,
-        already_selected_symptoms_mask: selectedMask.toString(),
-      }),
-    });
-
-    const {
-      diseases,
-    }: {
-      diseases: string[];
-    } = await resp.json();
-
-    console.log(diseases);
-    setDiseases(diseases);
-    setLoading(false);
-    setStep(3);
-  };
-
   const nextStep = async () => {
-    if (step === 0) {
+    setLoading(true);
+
+    if (step === Steps.INITIAL_INQUIRY) {
       if (selectedSymptoms.length === 0) {
-        alert("you're healthy mf.");
-        return;
+        alert("must select atleast one symptom to continue...");
+      } else {
+        const { next_questions, selected_mask, already_asked_mask } =
+          await getNextQuestions(
+            selectedSymptoms,
+            selectedMask,
+            alreadyAskedMask
+          );
+
+        if (next_questions.length === 0) {
+          setStep(Steps.DISEASE_DIAGNOSIS);
+          setDiseases([]);
+          return;
+        }
+
+        setQuestions(next_questions);
+        setSelectedMask(selected_mask);
+        setAlreadyAskedMask(already_asked_mask);
+        setStep(Steps.FIRST_DETAILED_INQUIRY);
       }
-      await getNextQuestions();
-    } else if (step === 1) {
-      setStep(2);
-    } else if (step === 2) {
-      await getDiseases();
+    } else if (step === Steps.FIRST_DETAILED_INQUIRY) {
+      setStep(Steps.SECOND_DETAILED_INQUIRY);
+    } else if (step === Steps.SECOND_DETAILED_INQUIRY) {
+      const diseases = await getDiseases(
+        selectedSymptoms,
+        selectedMask,
+        alreadyAskedMask
+      );
+
+      setDiseases(diseases);
+      setStep(Steps.DISEASE_DIAGNOSIS);
     }
+
+    setLoading(false);
   };
 
   const addOrRemoveSymptom = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -165,7 +81,15 @@ function App() {
   };
 
   useEffect(() => {
-    getInitialQuestions();
+    (async () => {
+      const { initial_questions, selected_mask, already_asked_mask } =
+        await getInitialQuestions();
+
+      setQuestions(initial_questions);
+      setSelectedMask(selected_mask);
+      setAlreadyAskedMask(already_asked_mask);
+      setLoading(false);
+    })();
   }, []);
 
   if (loading) {
@@ -177,19 +101,6 @@ function App() {
     );
   }
 
-  if (loading) {
-    return (
-      <>
-        <h1>disease expert system.</h1>
-        <div className="card">Loading...</div>
-      </>
-    );
-  }
-
-  if (loading) {
-    return <h1>fetching questions...</h1>;
-  }
-
   return (
     <>
       <h1>disease expert system.</h1>
@@ -197,17 +108,20 @@ function App() {
         <Diseases diseases={diseases} />
       ) : (
         questions.length && (
-          <div className="card">
+          <form className="card">
             {questions
               .slice(f(step) * questions.length, g(step) * questions.length)
-              .map((q) => (
+              .map((question) => (
                 <Question
-                  question={q}
+                  key={question}
+                  question={question}
                   addOrRemoveSymptom={addOrRemoveSymptom}
                 />
               ))}
-            <button onClick={nextStep}>Continue</button>
-          </div>
+            <button type="button" onClick={nextStep}>
+              Continue
+            </button>
+          </form>
         )
       )}
     </>
