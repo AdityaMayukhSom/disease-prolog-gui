@@ -128,6 +128,17 @@ function App() {
     getInitialQuestions();
   }, []);
 
+  if (loading) {
+    return (
+      <>
+        <h1>disease expert system.</h1>
+        <div className="card">
+          Loading...
+        </div>
+      </>
+    )
+  }
+
   if (step === 3) {
     return (
       <>

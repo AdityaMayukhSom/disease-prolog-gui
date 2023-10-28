@@ -26,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/initial-questions")
 def get_initial_questions():
     symptoms_mapping, _ = get_mappings()
