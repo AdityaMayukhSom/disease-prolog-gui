@@ -18,11 +18,15 @@ function App() {
       selected_mask,
     }: {
       initial_questions: string[];
-      already_asked_mask: BigInt;
-      selected_mask: BigInt;
+      already_asked_mask: string;
+      selected_mask: string;
     } = await resp.json();
-    setAlreadyAskedMask(already_asked_mask);
-    setSelectedMask(selected_mask);
+
+    const numerical_already_asked_mask = BigInt(already_asked_mask);
+    const numerical_selected_mask = BigInt(selected_mask);
+
+    setAlreadyAskedMask(numerical_already_asked_mask);
+    setSelectedMask(numerical_selected_mask);
     setQuestions(initial_questions);
   };
 
@@ -33,21 +37,32 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        already_asked_mask: alreadyAskedMask,
-        already_selected_symptoms_mask: selectedMask,
         symptoms: selectedSymptoms,
+        already_asked_mask: alreadyAskedMask.toString(),
+        already_selected_symptoms_mask: selectedMask.toString(),
       }),
     });
-    const { next_questions, already_asked_mask, selected_mask } =
-      await resp.json();
+
+    const {
+      next_questions,
+      already_asked_mask,
+      selected_mask,
+    }: {
+      next_questions: string[];
+      already_asked_mask: string;
+      selected_mask: string;
+    } = await resp.json();
 
     if (next_questions.length === 0) {
       alert("dead.");
       return;
     }
 
-    setAlreadyAskedMask(already_asked_mask);
-    setSelectedMask(selected_mask);
+    const numerical_already_asked_mask = BigInt(already_asked_mask);
+    const numerical_selected_mask = BigInt(selected_mask);
+
+    setAlreadyAskedMask(numerical_already_asked_mask);
+    setSelectedMask(numerical_selected_mask);
     setQuestions(next_questions as string[]);
   };
 
@@ -57,7 +72,7 @@ function App() {
         alert("you're healthy mf.");
         return;
       }
-      console.log(selectedSymptoms);
+
       await getNextQuestions();
       setStep(1);
     } else if (step === 1) {
@@ -79,9 +94,12 @@ function App() {
     getInitialQuestions();
   }, []);
 
+  /*
   useEffect(() => {
-    console.log(alreadyAskedMask);
-  }, [alreadyAskedMask]);
+    console.log(alreadyAskedMask.toString());
+    console.log(typeof alreadyAskedMask);
+  }, [alreadyAskedMask]); 
+  */
 
   return (
     <>
