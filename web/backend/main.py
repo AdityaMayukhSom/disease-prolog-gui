@@ -49,8 +49,8 @@ def get_initial_questions():
     already_asked_mask: int = initial_mask
 
     return {
-        "already_asked_mask": already_asked_mask,
-        "selected_mask": 0,
+        "already_asked_mask": str(already_asked_mask),
+        "selected_mask": str(0),
         "initial_questions": initial_questions,
     }
 
@@ -90,8 +90,8 @@ def get_next_questions(request: SelectedSymptoms):
     print(next_set_questions)
 
     return {
-        "already_asked_mask": already_asked_mask,
-        "selected_mask": already_selected_symptoms_mask,
+        "already_asked_mask": str(already_asked_mask),
+        "selected_mask": str(already_selected_symptoms_mask),
         "next_questions": next_set_questions,
     }
 
