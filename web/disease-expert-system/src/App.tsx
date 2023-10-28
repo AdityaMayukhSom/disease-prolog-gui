@@ -3,6 +3,46 @@ import "./App.css";
 
 const SERVER_URL = "http://localhost:8000";
 
+const f = (x: number) => (1 / 4) * (x * x - x);
+const g = (x: number) => (1 / 2) * (x * x - 2 * x + 2);
+
+const Question = ({
+  question,
+  addOrRemoveSymptom,
+}: {
+  question: string;
+  addOrRemoveSymptom: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
+}) => {
+  return (
+    <div key={question} className="question">
+      <input
+        onChange={addOrRemoveSymptom}
+        type="checkbox"
+        value={question}
+        id={`question_${question}`}
+      />
+      <label htmlFor={`question_${question}`}>{question}</label>
+    </div>
+  );
+};
+
+const Diseases = ({ diseases }: { diseases: string[] }) => {
+  return diseases.length ? (
+    <div>
+      <h3>possible diseases:</h3>
+      <ul className="card">
+        {diseases.map((d) => (
+          <li key={d} className="disease">
+            {d}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <h3>good luck. we don&apos;t know what&apos;s wrong with you.</h3>
+  );
+};
+
 function App() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -13,7 +53,7 @@ function App() {
   const [diseases, setDiseases] = useState<string[]>([]);
 
   const getInitialQuestions = async () => {
-    setLoading(true)
+    setLoading(true);
     const resp = await fetch(SERVER_URL + "/initial-questions");
     const {
       initial_questions,
@@ -31,11 +71,11 @@ function App() {
     setAlreadyAskedMask(numerical_already_asked_mask);
     setSelectedMask(numerical_selected_mask);
     setQuestions(initial_questions);
-    setLoading(false)
+    setLoading(false);
   };
 
   const getNextQuestions = async () => {
-    setLoading(true)
+    setLoading(true);
     const resp = await fetch(SERVER_URL + "/next-questions", {
       method: "POST",
       headers: {
@@ -59,7 +99,7 @@ function App() {
     } = await resp.json();
 
     if (next_questions.length === 0) {
-      setStep(3)
+      setStep(3);
       setDiseases([]);
       return;
     }
@@ -70,12 +110,12 @@ function App() {
     setAlreadyAskedMask(numerical_already_asked_mask);
     setSelectedMask(numerical_selected_mask);
     setQuestions(next_questions as string[]);
-    setLoading(false)
+    setLoading(false);
     setStep(1);
   };
 
   const getDiseases = async () => {
-    setLoading(true)
+    setLoading(true);
     const resp = await fetch(SERVER_URL + "/matching-diseases", {
       method: "POST",
       headers: {
@@ -89,16 +129,16 @@ function App() {
     });
 
     const {
-      diseases
+      diseases,
     }: {
-      diseases: string[]
+      diseases: string[];
     } = await resp.json();
 
-    console.log(diseases)
-    setDiseases(diseases)
-    setLoading(false)
+    console.log(diseases);
+    setDiseases(diseases);
+    setLoading(false);
     setStep(3);
-  }
+  };
 
   const nextStep = async () => {
     if (step === 0) {
@@ -132,75 +172,43 @@ function App() {
     return (
       <>
         <h1>disease expert system.</h1>
-        <div className="card">
-          Loading...
-        </div>
+        <div className="card">Loading...</div>
       </>
-    )
+    );
   }
 
-  if (step === 3) {
+  if (loading) {
     return (
       <>
         <h1>disease expert system.</h1>
-        {diseases.length ? (
-          <div>
-            <h3>possible diseases:</h3>
-            <ul className="card">
-              {diseases.map((d) => (
-                <li key={d} className="disease">
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <h3>good luck. we don&apos;t know what&apos;s wrong with you.</h3>
-        )}
+        <div className="card">Loading...</div>
       </>
-    )
+    );
+  }
+
+  if (loading) {
+    return <h1>fetching questions...</h1>;
   }
 
   return (
     <>
       <h1>disease expert system.</h1>
-      {questions.length && (
-        <div className="card">
-          {step === 0 &&
-            questions.map((q) => (
-              <div key={q} className="q">
-                <input
-                  onChange={addOrRemoveSymptom}
-                  type="checkbox"
-                  value={q}
+      {step === 3 ? (
+        <Diseases diseases={diseases} />
+      ) : (
+        questions.length && (
+          <div className="card">
+            {questions
+              .slice(f(step) * questions.length, g(step) * questions.length)
+              .map((q) => (
+                <Question
+                  question={q}
+                  addOrRemoveSymptom={addOrRemoveSymptom}
                 />
-                <label htmlFor="question">{q}</label>
-              </div>
-            ))}
-          {step === 1 &&
-            questions.slice(0, questions.length / 2).map((q) => (
-              <div key={q} className="q">
-                <input
-                  onChange={addOrRemoveSymptom}
-                  type="checkbox"
-                  value={q}
-                />
-                <label htmlFor="question">{q}</label>
-              </div>
-            ))}
-          {step === 2 &&
-            questions.slice(questions.length / 2).map((q) => (
-              <div key={q} className="q">
-                <input
-                  onChange={addOrRemoveSymptom}
-                  type="checkbox"
-                  value={q}
-                />
-                <label htmlFor="question">{q}</label>
-              </div>
-            ))}
-          <button onClick={nextStep}>Continue</button>
-        </div>
+              ))}
+            <button onClick={nextStep}>Continue</button>
+          </div>
+        )
       )}
     </>
   );
