@@ -9,6 +9,13 @@ class Database:
     __DISEASES_PICKLE_FILE_PATH = "./pickle_files/diseases_mapping_file.pkl"
     __QUESTION_PICKLE_FILE_PATH = "./pickle_files/question_mapping_file.pkl"
 
+    __DISEASES_DESCRIPTION_PICKLE_FILE_PATH = (
+        "./pickle_files/diseases_description_mapping_file.pkl"
+    )
+    __DISEASES_PRECAUTION_PICKLE_FILE_PATH = (
+        "./pickle_files/diseases_precaution_mapping_file.pkl"
+    )
+
     @staticmethod
     def allowed_origins():
         origins: List[str] = [
@@ -44,7 +51,7 @@ class Database:
                 mapping = pickle.load(mapping_file)
                 return mapping
         except OSError:
-            print(error_msg)
+            print(error_msg, flush=True)
             sys.exit(1)
 
     @classmethod
@@ -67,3 +74,21 @@ class Database:
             cls.__QUESTION_PICKLE_FILE_PATH
         )
         return questions_mapping
+
+    @classmethod
+    def get_diseases_descriptions(cls):
+        diseases_description_mapping: Dict[
+            str, str
+        ] = Database.__create_mapping(
+            cls.__DISEASES_DESCRIPTION_PICKLE_FILE_PATH
+        )
+        return diseases_description_mapping
+
+    @classmethod
+    def get_diseases_precautions(cls):
+        diseases_precaution_mapping: Dict[
+            str, tuple[str]
+        ] = Database.__create_mapping(
+            cls.__DISEASES_PRECAUTION_PICKLE_FILE_PATH
+        )
+        return diseases_precaution_mapping

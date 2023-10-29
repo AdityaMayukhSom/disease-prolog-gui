@@ -77,7 +77,8 @@ def get_next_questions(request: SelectedSymptoms):
     already_asked_mask |= next_mask
     already_selected_symptoms_mask |= symptoms_mask
 
-    next_questions = [
+    # TODO : future error handling that if key is not present
+    next_questions: list[tuple[str, str]] = [
         (question, questions_mapping[question])
         for question in next_questions_key
     ]
@@ -97,6 +98,9 @@ def get_matching_diseases(request: SelectedSymptoms):
     symptoms_mapping = Database.get_symptoms()
     diseases_mapping = Database.get_diseases()
 
+    diseases_descriptions = Database.get_diseases_descriptions()
+    diseases_precautions = Database.get_diseases_precautions()
+    print(diseases_descriptions)
     symptoms_mask: int = encrypt_symptoms(
         symptoms_list=selected_symptoms,
         symptoms_mapping=symptoms_mapping,
@@ -109,4 +113,17 @@ def get_matching_diseases(request: SelectedSymptoms):
         diseases_mapping=diseases_mapping,
     )
 
-    return {"diseases": matching_diseases}
+    diseases: list[dict[str, str | tuple[str]]] = []
+    for disease in matching_diseases:
+        try:
+            diseases.append(
+                {
+                    "name": disease.strip(),
+                    "description": diseases_descriptions[disease.strip()],
+                    "precautions": diseases_precautions[disease.strip()],
+                }
+            )
+        except KeyError:
+            print(f"key {disease} not found", flush=True)
+
+    return {"diseases": diseases}
