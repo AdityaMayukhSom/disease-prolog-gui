@@ -105,33 +105,44 @@ function App() {
 
   return (
     <section className="w-full flex justify-center items-center flex-col">
-      <h1 className=" text-4xl py-4">disease expert system.</h1>
+      <h1 className=" text-4xl py-4">Disease Prediction System</h1>
       {step === 3 ? (
         <Diseases diseases={diseases} />
       ) : (
         questions.length && (
-          <form className=" w-full items-start max-w-2xl">
-            {questions
-              .slice(f(step) * questions.length, g(step) * questions.length)
-              .map((question) => (
-                <Question
-                  key={question[0]}
-                  question={question}
-                  addOrRemoveSymptom={addOrRemoveSymptom}
-                />
-              ))}
+          <>
+            <form className=" w-full items-start max-w-2xl">
+              <h1 className="w-full text-left text-xl py-5">
+                {
+                  {
+                    0: "Answer these questions to begin with -",
+                    1: "Okay, so do you also have any on these symptomps too?",
+                    2: "And lastly any of these?",
+                  }[step]
+                }
+              </h1>
+              {questions
+                .slice(f(step) * questions.length, g(step) * questions.length)
+                .map((question) => (
+                  <Question
+                    key={question[0]}
+                    question={question}
+                    addOrRemoveSymptom={addOrRemoveSymptom}
+                  />
+                ))}
 
-            {error && (
-              <h4 className=" text-red-400 text-sm py-3">
-                You must select atleast one symptom to proceed further...
-              </h4>
-            )}
-            <button type="button" onClick={nextStep}>
-              {step === Steps.SECOND_DETAILED_INQUIRY
-                ? "Find Disease"
-                : "Continue To Next Step"}
-            </button>
-          </form>
+              {error && (
+                <h4 className=" text-red-400 text-sm py-3">
+                  You must select atleast one symptom to proceed further...
+                </h4>
+              )}
+              <button type="button" onClick={nextStep}>
+                {step === Steps.SECOND_DETAILED_INQUIRY
+                  ? "Find Disease"
+                  : "Continue To Next Step"}
+              </button>
+            </form>
+          </>
         )
       )}
     </section>
