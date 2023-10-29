@@ -1,3 +1,5 @@
+import Disease from "../src/Disease";
+
 const SERVER_URL = "http://localhost:8000";
 
 export const getInitialQuestions = async () => {
@@ -78,7 +80,7 @@ export const getDiseases = async (
   const {
     diseases,
   }: {
-    diseases: string[];
+    diseases: Disease[];
   } = await resp.json();
 
   return diseases;

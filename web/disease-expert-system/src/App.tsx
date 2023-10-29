@@ -8,6 +8,7 @@ import {
   getInitialQuestions,
   getNextQuestions,
 } from "../data/APICalls";
+import Disease from "./Disease";
 
 const f = (x: number) => (1 / 4) * (x * x - x);
 const g = (x: number) => (1 / 2) * (x * x - 2 * x + 2);
@@ -27,7 +28,7 @@ function App() {
   const [alreadyAskedMask, setAlreadyAskedMask] = useState<bigint>(BigInt(0n));
   const [selectedMask, setSelectedMask] = useState<bigint>(BigInt(0n));
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
-  const [diseases, setDiseases] = useState<string[]>([]);
+  const [diseases, setDiseases] = useState<Disease[]>([]);
 
   const addOrRemoveSymptom = async (e: ChangeEvent<HTMLInputElement>) => {
     setError(false);
@@ -105,14 +106,16 @@ function App() {
 
   return (
     <section className="w-full flex justify-center items-center flex-col">
-      <h1 className=" text-4xl py-4">Disease Prediction System</h1>
+      <h1 className="text-4xl font-bold text-white py-4  rounded-md shadow-lg text-center">
+        Disease Prediction System
+      </h1>
       {step === 3 ? (
         <Diseases diseases={diseases} />
       ) : (
         questions.length && (
           <>
-            <form className=" w-full items-start max-w-2xl">
-              <h1 className="w-full text-left text-xl py-5">
+            <form className=" w-full items-start  max-w-3xl py-5">
+              <h1 className="text-2xl font-bold text-white mb-4">
                 {
                   {
                     0: "Answer these questions to begin with -",
@@ -133,7 +136,7 @@ function App() {
 
               {error && (
                 <h4 className=" text-red-400 text-sm py-3">
-                  You must select atleast one symptom to proceed further...
+                  * You must select atleast one symptom to proceed further
                 </h4>
               )}
               <button type="button" onClick={nextStep}>
