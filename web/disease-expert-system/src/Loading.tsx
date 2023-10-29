@@ -30,7 +30,7 @@ export default function Loading() {
     setFields((fields) => [...fields]);
   }, []);
   return (
-    <section className="w-full flex items-center">
+    <section className="w-full flex items-center justify-center pt-8">
       <div role="status" className="w-96 animate-pulse">
         {fields}
       </div>

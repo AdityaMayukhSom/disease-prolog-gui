@@ -106,7 +106,7 @@ function App() {
 
   return (
     <section className="w-full flex justify-center items-center flex-col">
-      <h1 className="text-4xl font-bold text-white py-4  rounded-md shadow-lg text-center">
+      <h1 className="text-4xl font-bold text-white py-4 mt-2 rounded-md shadow-lg text-center">
         Disease Prediction System
       </h1>
       {step === 3 ? (
