@@ -11,16 +11,11 @@ from utils import (
 from database import Database
 from schema import SelectedSymptoms
 
-origins: List[str] = [
-    "http://127.0.0.1:5173",
-    "http://localhost:5173",
-]
-
 app = FastAPI()
 
 app.add_middleware(
     middleware_class=CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=Database.allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,20 +25,8 @@ app.add_middleware(
 @app.get("/initial-questions")
 def get_initial_questions():
     symptoms_mapping = Database.get_symptoms()
-    diseases_mapping = Database.get_diseases()
     questions_mapping = Database.get_questions()
-
-    initial_questions_keys: List[str] = [
-        "high_fever",
-        "vomiting",
-        "fatigue",
-        "headache",
-        "chills",
-        "cough",
-        "skin_rash",
-        "constipation",
-        "swelling_joints",
-    ]
+    initial_questions_keys = Database.initial_questions_keys()
 
     initial_mask = 0
     for question in initial_questions_keys:

@@ -1,13 +1,37 @@
 import sys
 import pickle
 
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class Database:
     __SYMPTOMS_PICKLE_FILE_PATH = "./pickle_files/symptoms_mapping_file.pkl"
     __DISEASES_PICKLE_FILE_PATH = "./pickle_files/diseases_mapping_file.pkl"
     __QUESTION_PICKLE_FILE_PATH = "./pickle_files/question_mapping_file.pkl"
+
+    @staticmethod
+    def allowed_origins():
+        origins: List[str] = [
+            "http://127.0.0.1:5173",
+            "http://localhost:5173",
+        ]
+        return origins
+
+    @staticmethod
+    def initial_questions_keys():
+        keys: List[str] = [
+            "high_fever",
+            "vomiting",
+            "fatigue",
+            "headache",
+            "chills",
+            "cough",
+            "skin_rash",
+            "constipation",
+            "swelling_joints",
+        ]
+
+        return keys
 
     @staticmethod
     def __create_mapping(
@@ -24,21 +48,21 @@ class Database:
             sys.exit(1)
 
     @classmethod
-    def get_symptoms(cls) -> Dict[str, int]:
+    def get_symptoms(cls):
         symptoms_mapping: Dict[str, int] = Database.__create_mapping(
             cls.__SYMPTOMS_PICKLE_FILE_PATH
         )
         return symptoms_mapping
 
     @classmethod
-    def get_diseases(cls) -> Dict[str, int]:
+    def get_diseases(cls):
         diseases_mapping: Dict[str, int] = Database.__create_mapping(
             cls.__DISEASES_PICKLE_FILE_PATH
         )
         return diseases_mapping
 
     @classmethod
-    def get_questions(cls) -> Dict[str, str]:
+    def get_questions(cls):
         questions_mapping: Dict[str, str] = Database.__create_mapping(
             cls.__QUESTION_PICKLE_FILE_PATH
         )
