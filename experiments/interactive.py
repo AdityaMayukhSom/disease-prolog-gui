@@ -41,6 +41,10 @@ def create_dictionaries_with_dataframe(df: pd.DataFrame):
             "Urinary tract infection",  # special case, this has 4 symptoms but each symptom only has this, hence when we are discarding symptoms with one disease, effectively no symptom is left for urinary track infection
         ]:
             continue
+
+        disease = "_".join(
+            disease.strip().lower().replace("(", " ").replace(")", " ").split()
+        )
         if disease not in diseases_dict:
             diseases_dict.update({disease: set()})
         for j in range(1, attr_len):
@@ -55,6 +59,14 @@ def create_dictionaries_with_dataframe(df: pd.DataFrame):
                     "swelled_lymph_nodes",
                 ]:
                     continue
+
+                symptom = "_".join(
+                    symptom.strip()
+                    .lower()
+                    .replace("(", " ")
+                    .replace(")", " ")
+                    .split()
+                )
 
                 if symptom not in symptoms_dict:
                     symptoms_dict.update({symptom: set()})
@@ -373,9 +385,8 @@ if __name__ == "__main__":
         selected_symptoms, symptoms_mapping, diseases_mapping
     )
 
-    print(next_set_questions)
-    print(len(next_set_questions))
-
     generate_matching_diseases_from_symptoms_mask(
         selected_symptoms_mask, diseases_mapping
     )
+
+    print(symptoms_mapping)
