@@ -7,7 +7,7 @@ export const getInitialQuestions = async () => {
     already_asked_mask,
     selected_mask,
   }: {
-    initial_questions: string[];
+    initial_questions: string[][];
     already_asked_mask: string;
     selected_mask: string;
   } = await resp.json();
@@ -44,7 +44,7 @@ export const getNextQuestions = async (
     already_asked_mask,
     selected_mask,
   }: {
-    next_questions: string[];
+    next_questions: string[][];
     already_asked_mask: string;
     selected_mask: string;
   } = await resp.json();
