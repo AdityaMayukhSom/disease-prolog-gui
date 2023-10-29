@@ -8,7 +8,7 @@ from utils import (
     find_matching_diseases,
     generate_next_set_questions,
 )
-from database import get_mappings
+from database import Database
 from schema import SelectedSymptoms
 
 origins: List[str] = [
@@ -29,9 +29,11 @@ app.add_middleware(
 
 @app.get("/initial-questions")
 def get_initial_questions():
-    symptoms_mapping, _ = get_mappings()
+    symptoms_mapping = Database.get_symptoms()
+    diseases_mapping = Database.get_diseases()
+    questions_mapping = Database.get_questions()
 
-    initial_questions: List[str] = [
+    initial_questions_keys: List[str] = [
         "high_fever",
         "vomiting",
         "fatigue",
@@ -44,10 +46,15 @@ def get_initial_questions():
     ]
 
     initial_mask = 0
-    for question in initial_questions:
+    for question in initial_questions_keys:
         initial_mask |= 1 << symptoms_mapping[question]
 
     already_asked_mask: int = initial_mask
+
+    initial_questions = [
+        (question, questions_mapping[question])
+        for question in initial_questions_keys
+    ]
 
     return {
         "already_asked_mask": str(already_asked_mask),
@@ -63,7 +70,9 @@ def get_next_questions(request: SelectedSymptoms):
 
     selected_symptoms: List[str] = request.symptoms
 
-    (symptoms_mapping, diseases_mapping) = get_mappings()
+    symptoms_mapping = Database.get_symptoms()
+    diseases_mapping = Database.get_diseases()
+    questions_mapping = Database.get_questions()
 
     symptoms_mask = encrypt_symptoms(
         symptoms_list=selected_symptoms,
@@ -77,7 +86,7 @@ def get_next_questions(request: SelectedSymptoms):
 
     (
         next_set_mask,
-        next_set_questions,
+        next_set_questions_key,
     ) = generate_next_set_questions(
         selected_symptoms=selected_symptoms,
         already_asked_mask=already_asked_mask,
@@ -87,6 +96,11 @@ def get_next_questions(request: SelectedSymptoms):
 
     already_asked_mask |= next_set_mask
     already_selected_symptoms_mask |= symptoms_mask
+
+    next_set_questions = [
+        (question, questions_mapping[question])
+        for question in next_set_questions_key
+    ]
 
     return {
         "already_asked_mask": str(already_asked_mask),
@@ -100,7 +114,8 @@ def get_matching_diseases(request: SelectedSymptoms):
     already_selected_symptoms_mask: int = request.already_selected_symptoms_mask
     selected_symptoms: List[str] = request.symptoms
 
-    (symptoms_mapping, diseases_mapping) = get_mappings()
+    symptoms_mapping = Database.get_symptoms()
+    diseases_mapping = Database.get_diseases()
 
     symptoms_mask: int = encrypt_symptoms(
         symptoms_list=selected_symptoms,
