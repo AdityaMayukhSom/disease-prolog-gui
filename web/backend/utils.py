@@ -87,7 +87,7 @@ def find_matching_diseases(
     return matching_diseases
 
 
-def generate_next_set_questions(
+def get_next_questions_set(
     selected_symptoms: List[str],
     already_asked_mask: int,
     symptoms_mapping: Dict[str, int],

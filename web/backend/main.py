@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils import (
     encrypt_symptoms,
     find_matching_diseases,
-    generate_next_set_questions,
+    get_next_questions_set,
 )
 from database import Database
 from schema import SelectedSymptoms
@@ -67,28 +67,25 @@ def get_next_questions(request: SelectedSymptoms):
     # extra diseases than initial questions on the first go
     already_asked_mask |= symptoms_mask
 
-    (
-        next_set_mask,
-        next_set_questions_key,
-    ) = generate_next_set_questions(
+    next_mask, next_questions_key = get_next_questions_set(
         selected_symptoms=selected_symptoms,
         already_asked_mask=already_asked_mask,
         symptoms_mapping=symptoms_mapping,
         diseases_mapping=diseases_mapping,
     )
 
-    already_asked_mask |= next_set_mask
+    already_asked_mask |= next_mask
     already_selected_symptoms_mask |= symptoms_mask
 
-    next_set_questions = [
+    next_questions = [
         (question, questions_mapping[question])
-        for question in next_set_questions_key
+        for question in next_questions_key
     ]
 
     return {
         "already_asked_mask": str(already_asked_mask),
         "selected_mask": str(already_selected_symptoms_mask),
-        "next_questions": next_set_questions,
+        "next_questions": next_questions,
     }
 
 

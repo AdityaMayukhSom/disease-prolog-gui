@@ -48,21 +48,21 @@ class Database:
             sys.exit(1)
 
     @classmethod
-    def get_symptoms(cls):
+    def get_symptoms(cls) -> Dict[str, int]:
         symptoms_mapping: Dict[str, int] = Database.__create_mapping(
             cls.__SYMPTOMS_PICKLE_FILE_PATH
         )
         return symptoms_mapping
 
     @classmethod
-    def get_diseases(cls):
+    def get_diseases(cls) -> Dict[str, int]:
         diseases_mapping: Dict[str, int] = Database.__create_mapping(
             cls.__DISEASES_PICKLE_FILE_PATH
         )
         return diseases_mapping
 
     @classmethod
-    def get_questions(cls):
+    def get_questions(cls) -> Dict[str, str]:
         questions_mapping: Dict[str, str] = Database.__create_mapping(
             cls.__QUESTION_PICKLE_FILE_PATH
         )
