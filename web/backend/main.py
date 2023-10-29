@@ -7,6 +7,7 @@ from utils import (
     encrypt_symptoms,
     find_matching_diseases,
     get_next_questions_set,
+    title_case,
 )
 from database import Database
 from schema import SelectedSymptoms
@@ -100,7 +101,7 @@ def get_matching_diseases(request: SelectedSymptoms):
 
     diseases_descriptions = Database.get_diseases_descriptions()
     diseases_precautions = Database.get_diseases_precautions()
-    print(diseases_descriptions)
+
     symptoms_mask: int = encrypt_symptoms(
         symptoms_list=selected_symptoms,
         symptoms_mapping=symptoms_mapping,
@@ -118,9 +119,9 @@ def get_matching_diseases(request: SelectedSymptoms):
         try:
             diseases.append(
                 {
-                    "name": disease.strip(),
-                    "description": diseases_descriptions[disease.strip()],
-                    "precautions": diseases_precautions[disease.strip()],
+                    "name": title_case(disease),
+                    "description": diseases_descriptions[disease],
+                    "precautions": diseases_precautions[disease],
                 }
             )
         except KeyError:

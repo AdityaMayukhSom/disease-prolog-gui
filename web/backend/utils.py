@@ -1,6 +1,15 @@
 from typing import Dict, List, Optional
 
 
+def title_case(input: str):
+    # Split the input string by underscores
+    words = input.split("_")
+
+    # Capitalize the first letter of each word and join them back
+    title_case = " ".join(word.capitalize() for word in words)
+    return title_case
+
+
 def encrypt_diseases(
     diseases_list: List[str],
     diseases_mapping: Dict[str, int],
