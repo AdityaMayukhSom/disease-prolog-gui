@@ -4,11 +4,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from utils import (
+    decrypt_symptoms,
     encrypt_symptoms,
     find_matching_diseases,
     get_next_questions_set,
     title_case,
 )
+
+from prolog_utils import find_matching_diseases_prolog
+
 from database import Database
 from schema import SelectedSymptoms
 
@@ -109,9 +113,8 @@ def get_matching_diseases(request: SelectedSymptoms):
 
     already_selected_symptoms_mask |= symptoms_mask
 
-    matching_diseases: List[str] = find_matching_diseases(
-        symptoms=already_selected_symptoms_mask,
-        diseases_mapping=diseases_mapping,
+    matching_diseases: List[str] = find_matching_diseases_prolog(
+        already_selected_symptoms_mask, symptoms_mapping
     )
 
     diseases: list[dict[str, str | tuple[str]]] = []
@@ -119,7 +122,7 @@ def get_matching_diseases(request: SelectedSymptoms):
         try:
             diseases.append(
                 {
-                    "name": title_case(disease),
+                    "name": title_case(disease, sep="_"),
                     "description": diseases_descriptions[disease],
                     "precautions": diseases_precautions[disease],
                 }
