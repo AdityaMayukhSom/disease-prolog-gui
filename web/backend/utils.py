@@ -1,9 +1,33 @@
 from typing import Dict, List, Optional
 
 
-def title_case(input: str):
+def title_case(input: str, sep: str = " "):
+    """
+    Convert an input string to title case by capitalizing the first letter
+    of each word, where words are separated by a specified separator.
+
+    Arguments
+    ---------
+    `@Required` `input`: `str`
+
+    The input string to be converted to title case.
+
+    `@Optional` `sep`: `str`
+
+    The separator used to split the input string into words.
+    Default is " " (space).
+
+    Returns
+    -------
+    A new string joined by white spaces in title case where the first letter
+    of each word is capitalized.
+
+    Notes
+    -----
+    1. Words are defined as substrings separated by the provided separator.
+    """
     # Split the input string by underscores
-    words = input.split("_")
+    words = input.split(sep)
 
     # Capitalize the first letter of each word and join them back
     title_case = " ".join(word.capitalize() for word in words)
@@ -28,6 +52,51 @@ def encrypt_symptoms(
     for symptom in symptoms_list:
         combined_mask |= 1 << symptoms_mapping[symptom]
     return combined_mask
+
+
+def decrypt_symptoms(
+    symptoms: int, symptoms_mapping: Dict[str, int]
+) -> List[str]:
+    """
+    Utility function to decrypt the encoded symptoms which is an integer and
+    obtain a list of corresponding symptom keys.
+
+    Arguments
+    ---------
+    `@Required` `symptoms`: `int`
+
+    The encoded version of the symptoms.
+
+    `@Required` `symptoms_mapping`: `Dict[str, int]`
+
+    A dictionary containing the symptom keys as the dictionary keys and the
+    number of bits to shift to obtain the corresponding encoding of the symptom.
+
+    Returns
+    -------
+    A List[str] containing the symptom keys that match with the provided
+    encoded symptoms.
+
+    Raises
+    ------
+    `KeyError` if no symptom corresponding to the position of a set bit is present.
+    """
+
+    # the position of shifts required is the key and the symptomp is the value
+    reverse_symptoms_mapping: Dict[int, str] = {
+        symptoms_mapping[key]: key for key in symptoms_mapping.keys()
+    }
+
+    try:
+        symptoms_list: List[str] = [
+            reverse_symptoms_mapping[i]
+            for i in range(1, symptoms.bit_length() + 1)
+            if symptoms & (1 << i)
+        ]
+    except KeyError:
+        raise KeyError("no symptom corresponding to the position of set bit")
+
+    return symptoms_list
 
 
 def find_matching_diseases(
@@ -74,7 +143,6 @@ def find_matching_diseases(
     -----
     1. `symptoms_mapping` does not contain the encoding itself, but
     number of places unity must be shiftes to get the encoding.
-
     """
     symptoms_mask: int
 
@@ -111,6 +179,7 @@ def get_next_questions_set(
     diseases_mask = encrypt_diseases(
         diseases_list=matching_diseases, diseases_mapping=diseases_mapping
     )
+
     next_set_mask: int = diseases_mask & ~already_asked_mask
 
     next_set_questions: List[str] = []
