@@ -1,6 +1,6 @@
 import Disease from "../src/Disease";
 
-const SERVER_URL = "http://localhost:8000";
+const SERVER_URL = "https://disease-ai-backend.onrender.com";
 
 export const getInitialQuestions = async () => {
   const resp = await fetch(SERVER_URL + "/initial-questions");
