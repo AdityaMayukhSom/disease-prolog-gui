@@ -105,17 +105,22 @@ function App() {
   }
 
   return (
-    <section className="w-full flex justify-center items-center flex-col">
-      <h1 className="text-4xl font-bold text-white py-4 mt-2 rounded-md shadow-lg text-center">
+    <section className="w-full flex items-center flex-col min-h-screen">
+      <h1 className="text-3xl md:text-4xl font-bold text-white py-4 mt-4 rounded-md shadow-lg text-center px-2">
         Disease Prediction System
       </h1>
+      <code className="flex flex-col md:flex-row justify-center items-center">
+        <p>Name: Aditya Mayukh Som</p>{" "}
+        <p className=" hidden md:inline">&#44;&nbsp;</p>
+        <p>Roll No: 002111001123</p>
+      </code>
       {step === 3 ? (
         <Diseases diseases={diseases} />
       ) : (
         questions.length && (
           <>
-            <form className=" w-full items-start  max-w-3xl py-5">
-              <h1 className="text-2xl font-bold text-white mb-4">
+            <form className=" w-full items-start  max-w-3xl py-5 px-4">
+              <h1 className="text-xl md:text-2xl font-bold text-white mb-4">
                 {
                   {
                     0: "Answer these questions to begin with -",
